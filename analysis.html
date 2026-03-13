@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据分析 · CementAI</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+
+:root {
+  --ink:    #09111c;
+  --ink2:   #101e2e;
+  --ink3:   #162438;
+  --steel:  #1e3a58;
+  --wire:   #2e5480;
+  --mist:   #5b8ab5;
+  --frost:  #9ec5e0;
+  --snow:   #ddeef8;
+  --white:  #f0f8ff;
+  --sky:    #38bdf8;
+  --sky2:   #0ea5e9;
+  --lime:   #4ade80;
+  --lime2:  #16a34a;
+  --amber:  #fbbf24;
+  --coral:  #f87171;
+  --violet: #a78bfa;
+  --nav-h:  62px;
+  --r:      10px;
+  --r-sm:   6px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.5);
+  --glow-sky:  0 0 24px rgba(56,189,248,0.2);
+  --glow-lime: 0 0 24px rgba(74,222,128,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--ink);
+  color: var(--snow);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grid bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.022) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* ══ NAV ══ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: var(--nav-h);
+  background: rgba(9,17,28,0.88);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(46,84,128,0.35);
+  display: flex; align-items: center; padding: 0 32px; gap: 0;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px; text-decoration: none;
+  margin-right: 36px;
+}
+.nav-logo-hex {
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--sky), var(--lime));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+  color: var(--ink); letter-spacing: -1px;
+}
+.nav-logo-text { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--white); line-height: 1.2; }
+.nav-logo-sub { font-size: 10px; color: var(--mist); font-family: 'Noto Sans SC', sans-serif; font-weight: 300; }
+
+.nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
+.nav-link {
+  padding: 6px 14px; border-radius: 6px; text-decoration: none;
+  font-size: 13px; font-weight: 500; color: var(--mist); transition: all 0.18s;
+  position: relative;
+}
+.nav-link:hover { color: var(--frost); background: rgba(56,189,248,0.06); }
+.nav-link.active { color: var(--sky); background: rgba(56,189,248,0.1); }
+.nav-link.active::after {
+  content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 2px; border-radius: 1px;
+  background: linear-gradient(90deg, var(--sky), var(--lime));
+}
+
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  padding: 7px 18px; border-radius: 6px; cursor: pointer;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px; border: none;
+  background: linear-gradient(135deg, var(--sky2), var(--lime2));
+  color: var(--white); transition: all 0.18s; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.nav-btn:hover { opacity: 0.88; box-shadow: var(--glow-sky); transform: translateY(-1px); }
+
+/* ══ PAGE WRAPPER ══ */
+.page { padding-top: var(--nav-h); position: relative; z-index: 1; }
+
+/* ══ HERO SECTION ══ */
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 32px; position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(56,189,248,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 80% 30%, rgba(74,222,128,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 90%, rgba(167,139,250,0.04) 0%, transparent 60%);
+}
+.hero-content { max-width: 720px; text-align: center; position: relative; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--sky);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px;
+  padding: 5px 14px; border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 20px; background: rgba(56,189,248,0.06);
+}
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: pulse 1.8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.hero-h1 {
+  font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 6vw, 3.8rem);
+  font-weight: 800; line-height: 1.1; margin-bottom: 20px; color: var(--white);
+}
+.hero-h1 em { font-style: normal; color: var(--sky); }
+.hero-h1 span {
+  background: linear-gradient(135deg, var(--sky), var(--lime));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-desc { font-size: 1rem; color: var(--mist); line-height: 1.75; margin-bottom: 36px; max-width: 560px; margin-left: auto; margin-right: auto; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-hero-primary {
+  padding: 13px 32px; border-radius: 8px; cursor: pointer; border: none;
+  background: linear-gradient(135deg, var(--sky), var(--lime));
+  color: var(--ink); font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+  transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-hero-primary:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(56,189,248,0.35); }
+.btn-hero-ghost {
+  padding: 13px 32px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(56,189,248,0.3); background: rgba(56,189,248,0.05);
+  color: var(--sky); font-size: 14px; font-weight: 500;
+  transition: all 0.2s; text-decoration: none;
+}
+.btn-hero-ghost:hover { border-color: var(--sky); background: rgba(56,189,248,0.1); }
+
+/* Stats row */
+.hero-stats { display: flex; gap: 32px; justify-content: center; margin-top: 48px; flex-wrap: wrap; }
+.stat-item { text-align: center; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1; }
+.stat-num span { color: var(--sky); }
+.stat-label { font-size: 11px; color: var(--mist); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+.stat-divider { width: 1px; background: rgba(46,84,128,0.4); align-self: stretch; }
+
+/* ══ SECTION ══ */
+.section { padding: 80px 32px; max-width: 1200px; margin: 0 auto; }
+.section-center { text-align: center; margin-bottom: 52px; }
+.section-tag {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--lime); letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-h2 {
+  font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800; color: var(--white); line-height: 1.2; margin-bottom: 14px;
+}
+.section-h2 em { font-style: normal; color: var(--sky); }
+.section-desc { font-size: 0.95rem; color: var(--mist); max-width: 560px; margin: 0 auto; }
+
+/* ══ CARDS ══ */
+.card {
+  background: var(--ink2); border: 1px solid rgba(46,84,128,0.35);
+  border-radius: var(--r); padding: 24px; transition: all 0.22s;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(135deg, rgba(56,189,248,0.04) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.22s;
+}
+.card:hover { border-color: rgba(56,189,248,0.3); transform: translateY(-3px); box-shadow: var(--shadow); }
+.card:hover::before { opacity: 1; }
+
+.card-icon {
+  width: 44px; height: 44px; border-radius: 10px; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.card-icon.sky { background: rgba(56,189,248,0.12); }
+.card-icon.lime { background: rgba(74,222,128,0.12); }
+.card-icon.amber { background: rgba(251,191,36,0.12); }
+.card-icon.violet { background: rgba(167,139,250,0.12); }
+.card-icon.coral { background: rgba(248,113,113,0.12); }
+
+.card-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+.card-desc { font-size: 13px; color: var(--mist); line-height: 1.65; }
+
+/* ══ GRID ══ */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 900px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .grid-3, .grid-2, .grid-4 { grid-template-columns: 1fr; } }
+
+/* ══ BADGE / TAG ══ */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+}
+.badge-sky { background: rgba(56,189,248,0.12); color: var(--sky); border: 1px solid rgba(56,189,248,0.25); }
+.badge-lime { background: rgba(74,222,128,0.12); color: var(--lime); border: 1px solid rgba(74,222,128,0.25); }
+.badge-amber { background: rgba(251,191,36,0.12); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
+
+/* ══ DIVIDER ══ */
+.divider { border: none; border-top: 1px solid rgba(46,84,128,0.25); margin: 0; }
+
+/* ══ FOOTER ══ */
+footer {
+  border-top: 1px solid rgba(46,84,128,0.25); padding: 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px; position: relative; z-index: 1;
+}
+.footer-brand { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--frost); }
+.footer-copy { font-size: 12px; color: var(--wire); }
+.footer-links { display: flex; gap: 20px; }
+.footer-link { font-size: 12px; color: var(--mist); text-decoration: none; transition: color 0.15s; }
+.footer-link:hover { color: var(--sky); }
+
+/* ══ UTILS ══ */
+.text-sky { color: var(--sky); }
+.text-lime { color: var(--lime); }
+.text-mist { color: var(--mist); }
+.text-white { color: var(--white); }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.fw-bold { font-weight: 700; }
+.mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; } .mt-32 { margin-top: 32px; }
+.mb-8 { margin-bottom: 8px; } .mb-16 { margin-bottom: 16px; }
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+.anim-1 { animation: fadeUp 0.6s ease-out both; }
+.anim-2 { animation: fadeUp 0.6s 0.1s ease-out both; }
+.anim-3 { animation: fadeUp 0.6s 0.2s ease-out both; }
+.anim-4 { animation: fadeUp 0.6s 0.3s ease-out both; }
+.anim-5 { animation: fadeUp 0.6s 0.4s ease-out both; }
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--wire); }
+</style>
+<style>
+.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.analysis-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.chart-card {
+  background: var(--ink2); border: 1px solid rgba(46,84,128,0.35);
+  border-radius: var(--r); overflow: hidden;
+}
+.chart-card-hd {
+  padding: 14px 18px; border-bottom: 1px solid rgba(46,84,128,0.2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.chart-card-title { font-size: 13px; font-weight: 700; color: var(--frost); }
+.chart-card-sub { font-size: 11px; color: var(--mist); margin-top: 2px; }
+.chart-card-body { padding: 16px; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--ink2); border: 1px solid rgba(46,84,128,0.3);
+  border-radius: var(--r); padding: 16px; position: relative; overflow: hidden;
+}
+.stat-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; }
+.stat-card.sky::after { background: linear-gradient(90deg, var(--sky), transparent); }
+.stat-card.lime::after { background: linear-gradient(90deg, var(--lime), transparent); }
+.stat-card.amber::after { background: linear-gradient(90deg, var(--amber), transparent); }
+.stat-card.violet::after { background: linear-gradient(90deg, var(--violet), transparent); }
+.stat-card-n { font-size: 10px; color: var(--mist); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.stat-card-v { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 600; }
+.stat-card.sky .stat-card-v { color: var(--sky); }
+.stat-card.lime .stat-card-v { color: var(--lime); }
+.stat-card.amber .stat-card-v { color: var(--amber); }
+.stat-card.violet .stat-card-v { color: var(--violet); }
+.stat-card-d { font-size: 10px; color: var(--mist); margin-top: 4px; }
+
+.import-zone {
+  border: 2px dashed rgba(46,84,128,0.4); border-radius: var(--r);
+  padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s;
+  background: rgba(56,189,248,0.02);
+}
+.import-zone:hover { border-color: var(--sky); background: rgba(56,189,248,0.05); }
+.import-zone.drag { border-color: var(--lime); background: rgba(74,222,128,0.05); }
+.import-icon { font-size: 36px; margin-bottom: 10px; }
+.import-title { font-size: 14px; font-weight: 700; color: var(--frost); margin-bottom: 6px; }
+.import-desc { font-size: 12px; color: var(--mist); }
+
+table.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.data-table th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 600; color: var(--mist); letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid rgba(46,84,128,0.3); background: rgba(9,17,28,0.5); }
+table.data-table td { padding: 8px 12px; color: var(--snow); border-bottom: 1px solid rgba(46,84,128,0.12); }
+table.data-table tr:hover td { background: rgba(56,189,248,0.03); }
+table.data-table .best-row td { background: rgba(74,222,128,0.05); }
+table.data-table .mono { font-family: 'JetBrains Mono', monospace; color: var(--sky); }
+table.data-table .lime { color: var(--lime); }
+
+.param-corr-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.pcr-lbl { font-size: 12px; color: var(--mist); width: 80px; flex-shrink: 0; }
+.pcr-track { flex: 1; height: 8px; background: var(--ink3); border-radius: 4px; position: relative; }
+.pcr-fill { position: absolute; top: 0; height: 100%; border-radius: 4px; transition: all 0.8s ease-out; }
+.pcr-fill.pos { background: linear-gradient(90deg, var(--sky), var(--lime)); left: 50%; }
+.pcr-fill.neg { background: linear-gradient(90deg, var(--coral), transparent); right: 50%; }
+.pcr-midline { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--wire); }
+.pcr-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--sky); width: 44px; text-align: right; }
+.pcr-val.neg { color: var(--coral); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html"><div class="nav-logo-hex">CA</div><div><div class="nav-logo-text">CementAI</div><div class="nav-logo-sub">智能配方优化平台</div></div></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">首页</a>
+    <a class="nav-link" href="optimizer.html">优化系统</a>
+    <a class="nav-link active" href="analysis.html">数据分析</a>
+    <a class="nav-link" href="docs.html">使用文档</a>
+    <a class="nav-link" href="about.html">关于我们</a>
+  </div>
+  <div class="nav-right"><a class="nav-btn" href="optimizer.html">🚀 开始优化</a></div>
+</nav>
+
+<div class="page">
+<div style="max-width:1200px;margin:0 auto;padding:32px 32px 60px">
+
+  <div style="margin-bottom:28px">
+    <div class="section-tag">// 数据分析</div>
+    <h1 class="section-h2" style="text-align:left;margin-bottom:8px">实验结果<em>可视化分析</em></h1>
+    <p style="font-size:13px;color:var(--mist)">导入优化实验CSV文件，自动生成收敛曲线、参数敏感性、帕累托分析等图表</p>
+  </div>
+
+  <!-- Import Zone -->
+  <div class="import-zone" id="importZone" onclick="document.getElementById('csvFile').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+    <div class="import-icon">📂</div>
+    <div class="import-title">导入优化结果 CSV</div>
+    <div class="import-desc">点击选择文件，或将 CSV 文件拖拽到此处<br>（从优化页面点击"导出CSV"获取文件）</div>
+    <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="loadCSV(this.files[0])">
+  </div>
+  <div style="text-align:center;margin-top:10px">
+    <button onclick="loadDemo()" style="padding:7px 20px;border-radius:6px;border:1px solid var(--wire);background:transparent;color:var(--mist);cursor:pointer;font-size:12px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--sky)';this.style.color='var(--sky)'" onmouseout="this.style.borderColor='var(--wire)';this.style.color='var(--mist)'">或使用演示数据体验分析功能</button>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stat-grid" id="statGrid" style="display:none;margin-top:28px">
+    <div class="stat-card sky"><div class="stat-card-n">总实验次数</div><div class="stat-card-v" id="st_total">--</div><div class="stat-card-d">次实验记录</div></div>
+    <div class="stat-card lime"><div class="stat-card-n">最优抗压强度</div><div class="stat-card-v" id="st_str">--</div><div class="stat-card-d">MPa</div></div>
+    <div class="stat-card amber"><div class="stat-card-n">最优综合评分</div><div class="stat-card-v" id="st_score">--</div><div class="stat-card-d">/ 100 分</div></div>
+    <div class="stat-card violet"><div class="stat-card-n">总实验成本</div><div class="stat-card-v" id="st_cost">--</div><div class="stat-card-d">元</div></div>
+  </div>
+
+  <!-- Charts -->
+  <div id="chartsArea" style="display:none">
+    <div class="analysis-grid" style="margin-bottom:20px">
+      <div class="chart-card">
+        <div class="chart-card-hd"><div><div class="chart-card-title">优化收敛曲线</div><div class="chart-card-sub">综合评分随迭代次数的变化</div></div><span class="badge badge-sky">ITER</span></div>
+        <div class="chart-card-body"><canvas id="chartConv" height="220"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-hd"><div><div class="chart-card-title">抗压强度分布</div><div class="chart-card-sub">每次实验的强度预测值</div></div><span class="badge badge-lime">MPa</span></div>
+        <div class="chart-card-body"><canvas id="chartStr" height="220"></canvas></div>
+      </div>
+    </div>
+
+    <div class="analysis-grid" style="margin-bottom:20px">
+      <div class="chart-card">
+        <div class="chart-card-hd"><div><div class="chart-card-title">帕累托前沿</div><div class="chart-card-sub">强度最大化 vs 渗透率最小化</div></div><span class="badge badge-amber">PARETO</span></div>
+        <div class="chart-card-body"><canvas id="chartPareto" height="220"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-hd"><div><div class="chart-card-title">成本-性能权衡</div><div class="chart-card-sub">累计实验成本与最优评分的关系</div></div><span class="badge badge-sky">COST</span></div>
+        <div class="chart-card-body"><canvas id="chartCost" height="220"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Param Correlation -->
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-card-hd"><div><div class="chart-card-title">参数敏感性分析</div><div class="chart-card-sub">各参数与抗压强度的 Spearman 相关系数（|值|越大，影响越显著）</div></div><span class="badge badge-lime">SENSITIVITY</span></div>
+      <div class="chart-card-body" id="corrBody"></div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="chart-card">
+      <div class="chart-card-hd" style="justify-content:space-between">
+        <div><div class="chart-card-title">完整实验记录</div><div class="chart-card-sub" id="tableSubtitle">-- 条记录</div></div>
+        <button onclick="exportFiltered()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--wire);background:transparent;color:var(--mist);cursor:pointer;font-size:11px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--lime)';this.style.color='var(--lime)'" onmouseout="this.style.borderColor='var(--wire)';this.style.color='var(--mist)'">↓ 导出表格</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table" id="dataTable">
+          <thead><tr><th>#</th><th>Ca/Si</th><th>Al/Si</th><th>W/C</th><th>砂比%</th><th>养护h</th><th>温度°C</th><th>强度 MPa</th><th>渗透率 mD</th><th>稠化 min</th><th>评分</th><th>成本 元</th></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <div><div class="footer-brand">CementAI</div><div class="footer-copy" style="margin-top:4px">数据分析模块</div></div>
+  <div class="footer-links"><a class="footer-link" href="optimizer.html">优化系统</a><a class="footer-link" href="docs.html">文档</a></div>
+  <div class="footer-copy">© 2025 CementAI</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+let data = [];
+let charts = {};
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('importZone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.csv')) loadCSV(file);
+}
+
+function loadCSV(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const rows = e.target.result.split('
+').filter(r => r.trim());
+    const headers = rows[0].split(',').map(h => h.trim().replace(/^\uFEFF/, ''));
+    data = rows.slice(1).map(row => {
+      const vals = row.split(',');
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = isNaN(vals[i]) ? vals[i] : +vals[i]; });
+      return obj;
+    }).filter(r => !isNaN(r['迭代']));
+    renderAll();
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function loadDemo() {
+  // Generate realistic demo data
+  data = [];
+  let bestScore = 0, cumCost = 0;
+  const rng = () => (Math.random() - 0.5) * 0.06;
+  for (let i = 1; i <= 25; i++) {
+    const t = i / 25;
+    const casi = +(0.6 + t * 0.7 + rng() * 0.3).toFixed(2);
+    const alsi = +(0.05 + t * 0.12 + rng() * 0.05).toFixed(3);
+    const wc = +(0.50 - t * 0.12 + rng() * 0.05).toFixed(2);
+    const sand = +(20 + t * 20 + rng() * 10).toFixed(0);
+    const cure = +(12 + t * 48 + rng() * 10).toFixed(0);
+    const temp = +(100 + t * 150 + rng() * 20).toFixed(0);
+    const str = +(35 + t * 40 + rng() * 8).toFixed(2);
+    const perm = +(0.3 - t * 0.25 + Math.abs(rng()) * 0.05).toFixed(4);
+    const thick = +(220 - t * 70 + rng() * 20).toFixed(1);
+    const fluid = +(120 - t * 60 + rng() * 15).toFixed(1);
+    const score = +(40 + t * 50 + rng() * 5).toFixed(3);
+    const cost = +(120 + Math.random() * 80).toFixed(1);
+    cumCost += cost;
+    if (score > bestScore) bestScore = score;
+    data.push({ '迭代': i, 'ca_si_ratio': casi, 'al_si_ratio': alsi, 'water_cement': wc, 'sand_ratio': sand, 'curing_time': cure, 'temperature': temp, '强度(MPa)': str, '渗透率(mD)': perm, '稠化时间(min)': thick, '失水量(mL)': fluid, '综合评分': score, '本次成本(元)': cost, '累计成本(元)': +cumCost.toFixed(0) });
+  }
+  renderAll();
+}
+
+function spearman(x, y) {
+  const n = x.length;
+  const rank = arr => { const s = [...arr].map((v,i) => ({v,i})).sort((a,b) => a.v-b.v); const r = new Array(n); s.forEach((e,i) => r[e.i] = i+1); return r; };
+  const rx = rank(x), ry = rank(y);
+  const d2 = rx.reduce((s,v,i) => s + (v-ry[i])**2, 0);
+  return 1 - 6*d2/(n*(n*n-1));
+}
+
+function renderAll() {
+  document.getElementById('statGrid').style.display = 'grid';
+  document.getElementById('chartsArea').style.display = 'block';
+  document.getElementById('importZone').style.display = 'none';
+
+  const bestScore = Math.max(...data.map(r => r['综合评分'] || 0));
+  const bestStr = Math.max(...data.map(r => r['强度(MPa)'] || 0));
+  const totalCost = data[data.length-1]?.['累计成本(元)'] || 0;
+
+  document.getElementById('st_total').textContent = data.length;
+  document.getElementById('st_str').textContent = bestStr.toFixed(1);
+  document.getElementById('st_score').textContent = bestScore.toFixed(1);
+  document.getElementById('st_cost').textContent = totalCost.toFixed(0);
+
+  renderConvChart();
+  renderStrChart();
+  renderParetoChart();
+  renderCostChart();
+  renderCorr();
+  renderTable();
+}
+
+const chartColors = { bg: 'rgba(9,17,28,0)', grid: 'rgba(46,84,128,0.2)', text: 'rgba(91,138,181,0.8)', font: { size: 10, family: 'JetBrains Mono' } };
+
+function makeChart(id, type, data, opts) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id).getContext('2d');
+  charts[id] = new Chart(ctx, { type, data, options: { responsive: true, maintainAspectRatio: false, animation: { duration: 600 }, plugins: { legend: { labels: { color: 'rgba(184,212,232,0.7)', font: { size: 10, family: 'JetBrains Mono' }, boxWidth: 18 } } }, scales: { x: { ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } }, y: { ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } } }, ...opts } });
+  return charts[id];
+}
+
+function renderConvChart() {
+  const iters = data.map(r => r['迭代']);
+  const scores = data.map(r => r['综合评分'] || 0);
+  const bestSoFar = scores.reduce((acc, v) => { acc.push(Math.max(v, acc.length ? acc[acc.length-1] : 0)); return acc; }, []);
+  makeChart('chartConv', 'line', {
+    labels: iters,
+    datasets: [
+      { label: '当前评分', data: scores, borderColor: 'rgba(56,189,248,0.8)', backgroundColor: 'rgba(56,189,248,0.06)', borderWidth: 1.5, pointRadius: 2, fill: true, tension: 0.35 },
+      { label: '历史最优', data: bestSoFar, borderColor: 'rgba(74,222,128,0.9)', borderWidth: 2, pointRadius: 0, tension: 0.35, fill: false }
+    ]
+  }, { scales: { x: { title: { display: true, text: '迭代次数', color: 'rgba(91,138,181,0.6)', font: { size: 9 } }, ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } }, y: { min: 0, max: 100, title: { display: true, text: '综合评分', color: 'rgba(91,138,181,0.6)', font: { size: 9 } }, ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } } } });
+}
+
+function renderStrChart() {
+  makeChart('chartStr', 'bar', {
+    labels: data.map(r => '#' + r['迭代']),
+    datasets: [{ label: '抗压强度 (MPa)', data: data.map(r => r['强度(MPa)'] || 0), backgroundColor: data.map(r => r['综合评分'] === Math.max(...data.map(d => d['综合评分'])) ? 'rgba(74,222,128,0.7)' : 'rgba(56,189,248,0.4)'), borderRadius: 3 }]
+  }, { scales: { x: { ticks: { color: chartColors.text, font: { size: 8, family: 'JetBrains Mono' }, maxTicksLimit: 15 }, grid: { color: chartColors.grid } }, y: { title: { display: true, text: 'MPa', color: 'rgba(91,138,181,0.6)', font: { size: 9 } }, ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } } } });
+}
+
+function renderParetoChart() {
+  const pts = data.map(r => ({ x: r['强度(MPa)'] || 0, y: r['渗透率(mD)'] || 0, score: r['综合评分'] || 0 }));
+  // Find pareto front
+  const pareto = pts.filter(p => !pts.some(q => q.x >= p.x && q.y <= p.y && (q.x > p.x || q.y < p.y))).sort((a, b) => a.x - b.x);
+  makeChart('chartPareto', 'scatter', {
+    datasets: [
+      { label: '所有实验点', data: pts, backgroundColor: pts.map(p => `rgba(56,189,248,${0.2 + p.score/100*0.5})`), pointRadius: 5 },
+      { label: '帕累托前沿', data: pareto, backgroundColor: 'rgba(74,222,128,0.8)', borderColor: 'rgba(74,222,128,0.5)', showLine: true, pointRadius: 6, borderWidth: 1.5, tension: 0.2 }
+    ]
+  }, { scales: { x: { title: { display: true, text: '抗压强度 (MPa) ↑', color: 'rgba(91,138,181,0.6)', font: { size: 9 } }, ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } }, y: { title: { display: true, text: '渗透率 (mD) ↓', color: 'rgba(91,138,181,0.6)', font: { size: 9 } }, ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } } } });
+}
+
+function renderCostChart() {
+  const costs = data.map(r => r['累计成本(元)'] || 0);
+  const bestSoFar = data.reduce((acc, r) => { const s = r['综合评分'] || 0; acc.push(Math.max(s, acc.length ? acc[acc.length-1] : 0)); return acc; }, []);
+  makeChart('chartCost', 'scatter', {
+    datasets: [{ label: '成本-最优评分', data: costs.map((c, i) => ({ x: c, y: bestSoFar[i] })), backgroundColor: costs.map((_, i) => `rgba(167,139,250,${0.3 + i/costs.length*0.5})`), showLine: true, borderColor: 'rgba(167,139,250,0.4)', pointRadius: 4, tension: 0.3 }]
+  }, { scales: { x: { title: { display: true, text: '累计成本 (元)', color: 'rgba(91,138,181,0.6)', font: { size: 9 } }, ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } }, y: { min: 0, max: 100, title: { display: true, text: '历史最优评分', color: 'rgba(91,138,181,0.6)', font: { size: 9 } }, ticks: { color: chartColors.text, font: chartColors.font }, grid: { color: chartColors.grid } } } });
+}
+
+function renderCorr() {
+  const strArr = data.map(r => r['强度(MPa)'] || 0);
+  const paramMap = [
+    { key: 'ca_si_ratio', label: 'Ca/Si' }, { key: 'al_si_ratio', label: 'Al/Si' },
+    { key: 'water_cement', label: 'W/C' }, { key: 'sand_ratio', label: '砂比' },
+    { key: 'curing_time', label: '养护时间' }, { key: 'temperature', label: '养护温度' }
+  ];
+  const html = paramMap.map(p => {
+    const vals = data.map(r => r[p.key] || 0);
+    const corr = spearman(vals, strArr);
+    const pct = Math.abs(corr) * 50;
+    const isPos = corr >= 0;
+    return `<div class="param-corr-row">
+      <span class="pcr-lbl">${p.label}</span>
+      <div class="pcr-track">
+        <div class="pcr-midline"></div>
+        <div class="pcr-fill ${isPos ? 'pos' : 'neg'}" style="width:${pct}%"></div>
+      </div>
+      <span class="pcr-val${isPos ? '' : ' neg'}">${corr >= 0 ? '+' : ''}${corr.toFixed(3)}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('corrBody').innerHTML = html;
+}
+
+function renderTable() {
+  const bestScore = Math.max(...data.map(r => r['综合评分'] || 0));
+  document.getElementById('tableSubtitle').textContent = data.length + ' 条实验记录';
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = data.map(r => `
+    <tr class="${r['综合评分'] === bestScore ? 'best-row' : ''}">
+      <td class="mono">#${r['迭代']}</td>
+      <td class="mono">${(r['ca_si_ratio'] || '--')}</td>
+      <td class="mono">${(r['al_si_ratio'] || '--')}</td>
+      <td class="mono">${(r['water_cement'] || '--')}</td>
+      <td class="mono">${(r['sand_ratio'] || '--')}</td>
+      <td class="mono">${(r['curing_time'] || '--')}</td>
+      <td class="mono">${(r['temperature'] || '--')}</td>
+      <td class="mono lime">${(r['强度(MPa)'] || '--')}</td>
+      <td class="mono">${(r['渗透率(mD)'] || '--')}</td>
+      <td class="mono">${(r['稠化时间(min)'] || '--')}</td>
+      <td class="mono lime">${(r['综合评分'] || '--')}</td>
+      <td class="mono" style="color:var(--mist)">${(r['本次成本(元)'] || '--')}</td>
+    </tr>
+  `).join('');
+}
+
+function exportFiltered() {
+  if (!data.length) return;
+  const keys = Object.keys(data[0]);
+  const csv = [keys.join(','), ...data.map(r => keys.map(k => r[k]).join(','))].join('
+');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv' }));
+  a.download = 'cement_analysis_export.csv';
+  a.click();
+}
+</script>
+</body>
+</html>

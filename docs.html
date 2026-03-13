@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>使用文档 · CementAI</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+
+:root {
+  --ink:    #09111c;
+  --ink2:   #101e2e;
+  --ink3:   #162438;
+  --steel:  #1e3a58;
+  --wire:   #2e5480;
+  --mist:   #5b8ab5;
+  --frost:  #9ec5e0;
+  --snow:   #ddeef8;
+  --white:  #f0f8ff;
+  --sky:    #38bdf8;
+  --sky2:   #0ea5e9;
+  --lime:   #4ade80;
+  --lime2:  #16a34a;
+  --amber:  #fbbf24;
+  --coral:  #f87171;
+  --violet: #a78bfa;
+  --nav-h:  62px;
+  --r:      10px;
+  --r-sm:   6px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.5);
+  --glow-sky:  0 0 24px rgba(56,189,248,0.2);
+  --glow-lime: 0 0 24px rgba(74,222,128,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--ink);
+  color: var(--snow);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grid bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.022) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* ══ NAV ══ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: var(--nav-h);
+  background: rgba(9,17,28,0.88);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(46,84,128,0.35);
+  display: flex; align-items: center; padding: 0 32px; gap: 0;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px; text-decoration: none;
+  margin-right: 36px;
+}
+.nav-logo-hex {
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--sky), var(--lime));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+  color: var(--ink); letter-spacing: -1px;
+}
+.nav-logo-text { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--white); line-height: 1.2; }
+.nav-logo-sub { font-size: 10px; color: var(--mist); font-family: 'Noto Sans SC', sans-serif; font-weight: 300; }
+
+.nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
+.nav-link {
+  padding: 6px 14px; border-radius: 6px; text-decoration: none;
+  font-size: 13px; font-weight: 500; color: var(--mist); transition: all 0.18s;
+  position: relative;
+}
+.nav-link:hover { color: var(--frost); background: rgba(56,189,248,0.06); }
+.nav-link.active { color: var(--sky); background: rgba(56,189,248,0.1); }
+.nav-link.active::after {
+  content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 2px; border-radius: 1px;
+  background: linear-gradient(90deg, var(--sky), var(--lime));
+}
+
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  padding: 7px 18px; border-radius: 6px; cursor: pointer;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px; border: none;
+  background: linear-gradient(135deg, var(--sky2), var(--lime2));
+  color: var(--white); transition: all 0.18s; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.nav-btn:hover { opacity: 0.88; box-shadow: var(--glow-sky); transform: translateY(-1px); }
+
+/* ══ PAGE WRAPPER ══ */
+.page { padding-top: var(--nav-h); position: relative; z-index: 1; }
+
+/* ══ HERO SECTION ══ */
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 32px; position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(56,189,248,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 80% 30%, rgba(74,222,128,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 90%, rgba(167,139,250,0.04) 0%, transparent 60%);
+}
+.hero-content { max-width: 720px; text-align: center; position: relative; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--sky);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px;
+  padding: 5px 14px; border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 20px; background: rgba(56,189,248,0.06);
+}
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: pulse 1.8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.hero-h1 {
+  font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 6vw, 3.8rem);
+  font-weight: 800; line-height: 1.1; margin-bottom: 20px; color: var(--white);
+}
+.hero-h1 em { font-style: normal; color: var(--sky); }
+.hero-h1 span {
+  background: linear-gradient(135deg, var(--sky), var(--lime));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-desc { font-size: 1rem; color: var(--mist); line-height: 1.75; margin-bottom: 36px; max-width: 560px; margin-left: auto; margin-right: auto; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-hero-primary {
+  padding: 13px 32px; border-radius: 8px; cursor: pointer; border: none;
+  background: linear-gradient(135deg, var(--sky), var(--lime));
+  color: var(--ink); font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+  transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-hero-primary:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(56,189,248,0.35); }
+.btn-hero-ghost {
+  padding: 13px 32px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(56,189,248,0.3); background: rgba(56,189,248,0.05);
+  color: var(--sky); font-size: 14px; font-weight: 500;
+  transition: all 0.2s; text-decoration: none;
+}
+.btn-hero-ghost:hover { border-color: var(--sky); background: rgba(56,189,248,0.1); }
+
+/* Stats row */
+.hero-stats { display: flex; gap: 32px; justify-content: center; margin-top: 48px; flex-wrap: wrap; }
+.stat-item { text-align: center; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1; }
+.stat-num span { color: var(--sky); }
+.stat-label { font-size: 11px; color: var(--mist); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+.stat-divider { width: 1px; background: rgba(46,84,128,0.4); align-self: stretch; }
+
+/* ══ SECTION ══ */
+.section { padding: 80px 32px; max-width: 1200px; margin: 0 auto; }
+.section-center { text-align: center; margin-bottom: 52px; }
+.section-tag {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--lime); letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-h2 {
+  font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800; color: var(--white); line-height: 1.2; margin-bottom: 14px;
+}
+.section-h2 em { font-style: normal; color: var(--sky); }
+.section-desc { font-size: 0.95rem; color: var(--mist); max-width: 560px; margin: 0 auto; }
+
+/* ══ CARDS ══ */
+.card {
+  background: var(--ink2); border: 1px solid rgba(46,84,128,0.35);
+  border-radius: var(--r); padding: 24px; transition: all 0.22s;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(135deg, rgba(56,189,248,0.04) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.22s;
+}
+.card:hover { border-color: rgba(56,189,248,0.3); transform: translateY(-3px); box-shadow: var(--shadow); }
+.card:hover::before { opacity: 1; }
+
+.card-icon {
+  width: 44px; height: 44px; border-radius: 10px; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.card-icon.sky { background: rgba(56,189,248,0.12); }
+.card-icon.lime { background: rgba(74,222,128,0.12); }
+.card-icon.amber { background: rgba(251,191,36,0.12); }
+.card-icon.violet { background: rgba(167,139,250,0.12); }
+.card-icon.coral { background: rgba(248,113,113,0.12); }
+
+.card-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+.card-desc { font-size: 13px; color: var(--mist); line-height: 1.65; }
+
+/* ══ GRID ══ */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 900px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .grid-3, .grid-2, .grid-4 { grid-template-columns: 1fr; } }
+
+/* ══ BADGE / TAG ══ */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+}
+.badge-sky { background: rgba(56,189,248,0.12); color: var(--sky); border: 1px solid rgba(56,189,248,0.25); }
+.badge-lime { background: rgba(74,222,128,0.12); color: var(--lime); border: 1px solid rgba(74,222,128,0.25); }
+.badge-amber { background: rgba(251,191,36,0.12); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
+
+/* ══ DIVIDER ══ */
+.divider { border: none; border-top: 1px solid rgba(46,84,128,0.25); margin: 0; }
+
+/* ══ FOOTER ══ */
+footer {
+  border-top: 1px solid rgba(46,84,128,0.25); padding: 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px; position: relative; z-index: 1;
+}
+.footer-brand { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--frost); }
+.footer-copy { font-size: 12px; color: var(--wire); }
+.footer-links { display: flex; gap: 20px; }
+.footer-link { font-size: 12px; color: var(--mist); text-decoration: none; transition: color 0.15s; }
+.footer-link:hover { color: var(--sky); }
+
+/* ══ UTILS ══ */
+.text-sky { color: var(--sky); }
+.text-lime { color: var(--lime); }
+.text-mist { color: var(--mist); }
+.text-white { color: var(--white); }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.fw-bold { font-weight: 700; }
+.mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; } .mt-32 { margin-top: 32px; }
+.mb-8 { margin-bottom: 8px; } .mb-16 { margin-bottom: 16px; }
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+.anim-1 { animation: fadeUp 0.6s ease-out both; }
+.anim-2 { animation: fadeUp 0.6s 0.1s ease-out both; }
+.anim-3 { animation: fadeUp 0.6s 0.2s ease-out both; }
+.anim-4 { animation: fadeUp 0.6s 0.3s ease-out both; }
+.anim-5 { animation: fadeUp 0.6s 0.4s ease-out both; }
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--wire); }
+</style>
+<style>
+.docs-layout { display: grid; grid-template-columns: 220px 1fr; gap: 0; max-width: 1100px; margin: 0 auto; padding: 40px 32px 80px; }
+.docs-nav { position: sticky; top: calc(var(--nav-h) + 24px); align-self: start; padding-right: 28px; border-right: 1px solid rgba(46,84,128,0.25); }
+.docs-nav-group { margin-bottom: 24px; }
+.docs-nav-group-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--mist); margin-bottom: 8px; }
+.docs-nav-link { display: block; padding: 5px 10px; border-radius: 5px; font-size: 13px; color: var(--mist); text-decoration: none; transition: all 0.15s; margin-bottom: 2px; cursor: pointer; }
+.docs-nav-link:hover { color: var(--frost); background: rgba(56,189,248,0.06); }
+.docs-nav-link.active { color: var(--sky); background: rgba(56,189,248,0.08); }
+
+.docs-content { padding-left: 40px; }
+.doc-section { margin-bottom: 52px; scroll-margin-top: 90px; }
+.doc-h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--white); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(46,84,128,0.3); }
+.doc-h3 { font-size: 15px; font-weight: 700; color: var(--frost); margin: 20px 0 8px; }
+.doc-p { font-size: 13.5px; color: var(--mist); line-height: 1.8; margin-bottom: 12px; }
+.doc-p a { color: var(--sky); text-decoration: none; }
+.doc-p a:hover { text-decoration: underline; }
+
+code {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  background: rgba(46,84,128,0.25); padding: 2px 6px; border-radius: 4px; color: var(--sky);
+}
+pre {
+  background: var(--ink2); border: 1px solid rgba(46,84,128,0.35);
+  border-radius: var(--r); padding: 16px 18px; overflow-x: auto; margin: 12px 0 16px;
+}
+pre code { background: none; padding: 0; font-size: 12.5px; line-height: 1.7; color: var(--snow); }
+.kw { color: var(--violet); } .fn { color: var(--sky); } .str { color: var(--lime); } .cm { color: var(--mist); font-style: italic; }
+
+.step-list { list-style: none; counter-reset: steps; }
+.step-list li { counter-increment: steps; display: flex; gap: 14px; margin-bottom: 16px; }
+.step-list li::before {
+  content: counter(steps); flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(56,189,248,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--sky);
+}
+.step-content { padding-top: 3px; }
+.step-title { font-size: 13.5px; font-weight: 700; color: var(--frost); margin-bottom: 4px; }
+.step-desc { font-size: 13px; color: var(--mist); line-height: 1.65; }
+
+.note {
+  background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.2);
+  border-left: 3px solid var(--sky); border-radius: var(--r-sm);
+  padding: 12px 16px; margin: 12px 0; font-size: 13px; color: var(--frost); line-height: 1.65;
+}
+.note.warn { background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.3); border-left-color: var(--amber); }
+.note.tip { background: rgba(74,222,128,0.06); border-color: rgba(74,222,128,0.25); border-left-color: var(--lime); }
+
+.param-ref { background: var(--ink2); border: 1px solid rgba(46,84,128,0.3); border-radius: var(--r); overflow: hidden; margin: 12px 0; }
+.param-ref-row { display: grid; grid-template-columns: 130px 80px 80px 1fr; gap: 0; padding: 9px 14px; border-bottom: 1px solid rgba(46,84,128,0.15); font-size: 12.5px; align-items: start; }
+.param-ref-row:last-child { border: none; }
+.param-ref-row.header { background: rgba(9,17,28,0.5); font-size: 10px; font-weight: 600; color: var(--mist); letter-spacing: 1px; text-transform: uppercase; }
+.param-ref-row .name { font-family: 'JetBrains Mono', monospace; color: var(--sky); }
+.param-ref-row .range { font-family: 'JetBrains Mono', monospace; color: var(--lime); font-size: 11.5px; }
+.param-ref-row .cost { font-family: 'JetBrains Mono', monospace; color: var(--amber); font-size: 11.5px; }
+.param-ref-row .desc { color: var(--mist); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html"><div class="nav-logo-hex">CA</div><div><div class="nav-logo-text">CementAI</div><div class="nav-logo-sub">智能配方优化平台</div></div></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">首页</a>
+    <a class="nav-link" href="optimizer.html">优化系统</a>
+    <a class="nav-link" href="analysis.html">数据分析</a>
+    <a class="nav-link active" href="docs.html">使用文档</a>
+    <a class="nav-link" href="about.html">关于我们</a>
+  </div>
+  <div class="nav-right"><a class="nav-btn" href="optimizer.html">🚀 开始优化</a></div>
+</nav>
+
+<div class="page">
+<div class="docs-layout">
+
+  <!-- Sidebar Nav -->
+  <aside class="docs-nav">
+    <div class="docs-nav-group">
+      <div class="docs-nav-group-title">快速开始</div>
+      <a class="docs-nav-link active" onclick="scrollTo('intro')">系统简介</a>
+      <a class="docs-nav-link" onclick="scrollTo('quickstart')">快速上手</a>
+      <a class="docs-nav-link" onclick="scrollTo('interface')">界面说明</a>
+    </div>
+    <div class="docs-nav-group">
+      <div class="docs-nav-group-title">参数配置</div>
+      <a class="docs-nav-link" onclick="scrollTo('params')">配方参数</a>
+      <a class="docs-nav-link" onclick="scrollTo('objectives')">优化目标</a>
+      <a class="docs-nav-link" onclick="scrollTo('budget')">成本约束</a>
+    </div>
+    <div class="docs-nav-group">
+      <div class="docs-nav-group-title">算法详解</div>
+      <a class="docs-nav-link" onclick="scrollTo('bo')">贝叶斯优化</a>
+      <a class="docs-nav-link" onclick="scrollTo('algo-compare')">算法对比</a>
+      <a class="docs-nav-link" onclick="scrollTo('convergence')">收敛检测</a>
+    </div>
+    <div class="docs-nav-group">
+      <div class="docs-nav-group-title">高级功能</div>
+      <a class="docs-nav-link" onclick="scrollTo('ai-chat')">AI对话分析</a>
+      <a class="docs-nav-link" onclick="scrollTo('export')">数据导出</a>
+      <a class="docs-nav-link" onclick="scrollTo('python')">Python集成</a>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <div class="docs-content">
+
+    <div class="doc-section" id="intro">
+      <h2 class="doc-h2">系统简介</h2>
+      <p class="doc-p">CementAI 是一个基于<strong style="color:var(--frost)">贝叶斯优化</strong>的水泥浆配方智能研发平台。其核心思想是将传统的"试错式"实验设计转化为AI驱动的<strong style="color:var(--frost)">闭环优化过程</strong>：AI根据历史实验数据预测最有潜力的下一组参数，自动提交给性能预测网站，读取结果后更新内部模型，循环迭代直至找到最优配方。</p>
+      <div class="note tip">💡 与随机搜索相比，贝叶斯优化通常能在 <strong>20次实验内</strong> 达到随机搜索100次才能达到的优化效果。</div>
+      <p class="doc-p">平台完全运行在浏览器中，无需安装任何软件，支持所有主流浏览器（Chrome、Edge、Firefox、360、QQ浏览器等）。</p>
+    </div>
+
+    <div class="doc-section" id="quickstart">
+      <h2 class="doc-h2">快速上手</h2>
+      <ul class="step-list">
+        <li><div class="step-content"><div class="step-title">打开优化系统</div><div class="step-desc">点击导航栏"优化系统"或首页"立即体验优化"按钮，进入优化界面。</div></div></li>
+        <li><div class="step-content"><div class="step-title">设置参数范围</div><div class="step-desc">在左侧面板中，系统已预设合理的初始参数值。你可以直接使用默认值，也可以根据实验经验调整各参数。如需固定某个参数（例如固定温度），点击参数右侧的锁定按钮🔓。</div></div></li>
+        <li><div class="step-content"><div class="step-title">选择优化算法</div><div class="step-desc">推荐使用<strong style="color:var(--sky)">贝叶斯优化（BO）</strong>，适合样本量少、实验成本高的场景。如需探索更大的参数空间，可选择"混合策略"。</div></div></li>
+        <li><div class="step-content"><div class="step-title">配置优化参数</div><div class="step-desc">设置最大实验次数（建议20-30次），填写总预算上限（系统会自动在预算内搜索），调整各目标权重（加大<code>抗压强度</code>权重以优先提升强度）。</div></div></li>
+        <li><div class="step-content"><div class="step-title">启动优化</div><div class="step-desc">点击<strong style="color:var(--lime)">▶ 启动优化</strong>，系统开始自动运行。中央日志区域会实时显示AI决策过程和预测结果，右侧会更新最优配方和性能雷达图。</div></div></li>
+        <li><div class="step-content"><div class="step-title">导出与分析</div><div class="step-desc">优化完成后，点击"导出CSV"保存实验记录，然后进入"数据分析"页面上传CSV，生成收敛曲线、帕累托前沿等可视化图表。</div></div></li>
+      </ul>
+    </div>
+
+    <div class="doc-section" id="params">
+      <h2 class="doc-h2">配方参数参考</h2>
+      <div class="param-ref">
+        <div class="param-ref-row header"><span>参数</span><span>范围</span><span>成本权重</span><span>说明</span></div>
+        <div class="param-ref-row"><span class="name">Ca/Si</span><span class="range">0.3 – 2.0</span><span class="cost">× 2.0</span><span class="desc">钙硅摩尔比，影响C-S-H凝胶类型。最优值通常在1.0–1.4之间，偏低则强度差，偏高则渗透率增大。</span></div>
+        <div class="param-ref-row"><span class="name">Al/Si</span><span class="range">0 – 0.5</span><span class="cost">× 3.0</span><span class="desc">铝硅摩尔比，加入铝源可改善高温稳定性，但Al/Si过高会缩短稠化时间，且铝源成本最高。</span></div>
+        <div class="param-ref-row"><span class="name">W/C</span><span class="range">0.30 – 0.70</span><span class="cost">× 1.0</span><span class="desc">水灰比，直接决定浆体流变性和硬化强度。W/C越低，强度越高，但施工性变差。</span></div>
+        <div class="param-ref-row"><span class="name">砂比</span><span class="range">0 – 80 %</span><span class="cost">× 0.5</span><span class="desc">硅砂质量分数，适量砂（30%左右）可提升强度并降低成本，过多会增加渗透率。</span></div>
+        <div class="param-ref-row"><span class="name">养护时间</span><span class="range">1 – 168 h</span><span class="cost">× 0.8</span><span class="desc">水化时间，养护越长强度越高，但存在收益递减。超高温下长时间养护可能导致强度衰退。</span></div>
+        <div class="param-ref-row"><span class="name">养护温度</span><span class="range">20 – 350 °C</span><span class="cost">× 1.5</span><span class="desc">影响C-S-H向α-C₂SH、Xonotlite等高温矿物的转化，高温养护加速水化但能耗高。</span></div>
+      </div>
+    </div>
+
+    <div class="doc-section" id="objectives">
+      <h2 class="doc-h2">优化目标与权重</h2>
+      <p class="doc-p">系统支持四个性能指标的加权多目标优化，综合评分计算公式为：</p>
+      <pre><code><span class="cm"># 各指标归一化到 [0, 1]，再按权重加权平均</span>
+s_score = min(1.0, 强度 / 80.0)           <span class="cm"># 80 MPa 为满分</span>
+p_score = max(0.0, 1 - 渗透率 / 0.5)     <span class="cm"># 越低越好，0.5 mD 为 0 分</span>
+t_score = max(0.0, 1 - |稠化时间 - 150| / 150)  <span class="cm"># 目标 150 min</span>
+f_score = max(0.0, 1 - 失水量 / 150)     <span class="cm"># 越低越好</span>
+
+综合评分 = (w₁·s + w₂·p + w₃·t + w₄·f) / (w₁+w₂+w₃+w₄) × 100</code></pre>
+      <div class="note">💡 若主要目标是最大化抗压强度，建议将<code>抗压强度</code>权重设为 0.6-0.8，其余权重相应减小。</div>
+    </div>
+
+    <div class="doc-section" id="budget">
+      <h2 class="doc-h2">成本约束模型</h2>
+      <p class="doc-p">每次实验的成本由固定成本和变动成本两部分组成：</p>
+      <pre><code>单次成本 = <span class="str">100</span> + Σ (参数相对用量 × 成本权重 × <span class="str">20</span>)
+
+<span class="cm"># 例：Ca/Si=1.5, Al/Si=0.3, W/C=0.4 时</span>
+成本 ≈ 100 + (1.5-0.3)/(2.0-0.3)×2×20 + 0.3/0.5×3×20 + (0.4-0.3)/(0.7-0.3)×1×20
+     ≈ 100 + 28.2 + 36.0 + 5.0 ≈ <span class="str">169.2</span> 元</code></pre>
+      <p class="doc-p">系统会在每次提议参数时检查剩余预算，若成本超出则自动跳过并重新采样。</p>
+    </div>
+
+    <div class="doc-section" id="bo">
+      <h2 class="doc-h2">贝叶斯优化原理</h2>
+      <div class="doc-h3">高斯过程代理模型</div>
+      <p class="doc-p">贝叶斯优化使用<strong style="color:var(--frost)">高斯过程（GP）</strong>对真实性能函数建立概率代理模型。每次实验后，GP会更新对整个参数空间的预测分布（均值μ和方差σ），使AI"知道"哪些区域有潜力、哪些区域不确定性高。</p>
+      <div class="doc-h3">期望改进（EI）采集函数</div>
+      <p class="doc-p">基于GP预测，计算每个候选点的<strong style="color:var(--frost)">期望改进值</strong>，平衡"利用已知好区域"和"探索未知区域"的权衡：</p>
+      <pre><code>EI(x) = (μ(x) - f_best - ξ) · Φ(Z) + σ(x) · φ(Z)
+        其中 Z = (μ(x) - f_best - ξ) / σ(x)
+        ξ = <span class="str">探索系数</span>（越大越倾向探索新区域）</code></pre>
+      <div class="note warn">⚠️ 前5次实验使用<strong>拉丁超立方采样</strong>均匀初始化参数空间，之后才切换为基于GP的EI优化。请勿在前5次就判断收敛。</div>
+    </div>
+
+    <div class="doc-section" id="ai-chat">
+      <h2 class="doc-h2">AI对话分析</h2>
+      <p class="doc-p">优化界面底部的对话框直接连接 Claude AI，系统会将<strong style="color:var(--frost)">当前最优配方、所有实验结果和迭代状态</strong>作为上下文传递给AI，你可以用自然语言询问：</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0">
+        <div class="note" style="margin:0">"当前Ca/Si=1.24为什么比1.0强度更高？从C-S-H理论解释"</div>
+        <div class="note" style="margin:0">"如何在不增加成本的前提下进一步降低渗透率？"</div>
+        <div class="note" style="margin:0">"分析一下参数敏感性，哪个参数对强度影响最大？"</div>
+        <div class="note" style="margin:0">"当前稠化时间偏短，应该调整哪个参数？"</div>
+      </div>
+      <div class="note tip">💡 AI对话功能需要访问 Anthropic API，请确保网络可以连接 <code>api.anthropic.com</code>。</div>
+    </div>
+
+    <div class="doc-section" id="python">
+      <h2 class="doc-h2">Python 后端集成</h2>
+      <p class="doc-p">如果你的性能预测是一个<strong style="color:var(--frost)">网页表单</strong>，可以下载我们提供的 Python 版本，使用 Selenium 自动填表：</p>
+      <pre><code><span class="kw">from</span> optimizer <span class="kw">import</span> CementOptimizationLoop
+
+loop = CementOptimizationLoop(
+    url=<span class="str">"http://101.43.178.48/"</span>,
+    total_budget=<span class="str">5000.0</span>,   <span class="cm"># 总预算（元）</span>
+    max_iterations=<span class="str">30</span>,     <span class="cm"># 最大实验次数</span>
+    headless=<span class="str">True</span>,          <span class="cm"># 无界面运行</span>
+    locked_params={},         <span class="cm"># 锁定参数：{"temperature": 180}</span>
+)
+best = loop.run()
+<span class="fn">print</span>(<span class="str">f"最优评分: {best.scoreVal:.4f}"</span>)
+<span class="fn">print</span>(<span class="str">f"最优配方: {best.params}"</span>)</code></pre>
+      <p class="doc-p">使用前需要先运行 <code>web_inspector.py</code> 检测网站的表单字段名，然后修改 <code>FIELD_SELECTORS</code> 和 <code>RESULT_SELECTORS</code> 适配你的网站。详见下载包中的 <code>README.md</code>。</p>
+    </div>
+
+  </div><!-- docs-content -->
+</div><!-- docs-layout -->
+</div><!-- page -->
+
+<footer>
+  <div><div class="footer-brand">CementAI</div><div class="footer-copy" style="margin-top:4px">使用文档</div></div>
+  <div class="footer-links"><a class="footer-link" href="optimizer.html">优化系统</a><a class="footer-link" href="analysis.html">数据分析</a></div>
+  <div class="footer-copy">© 2025 CementAI</div>
+</footer>
+
+<script>
+function scrollTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  document.querySelectorAll('.docs-nav-link').forEach(l => l.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
